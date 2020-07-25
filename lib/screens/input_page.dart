@@ -199,7 +199,7 @@ class _InputPageState extends State<InputPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          'WEUGHT',
+                          'WEIGHT',
                           style: kLabelTextStyle,
                         ),
                         Text(weight.toString(), style: kNumberTextStyle),

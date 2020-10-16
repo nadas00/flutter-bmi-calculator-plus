@@ -1,9 +1,10 @@
 import 'package:bmi_app/Components/reusable_bottom_button.dart';
 import 'package:bmi_app/Components/reusable_card.dart';
 import 'package:bmi_app/Components/reusable_card_content.dart';
-import 'package:bmi_app/Components/reusable_round_Icon_Button.dart';
 import 'package:bmi_app/calculator_brain.dart';
+import 'package:bmi_app/components/reusable_alert_dialog.dart';
 import 'package:bmi_app/screens/results_page.dart';
+import 'package:bmi_app/services/advert-service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,6 +19,7 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+  AdvertService _advertService = AdvertService();
   CalculatorBrain calculatorBrain;
 
   Gender selectedGender = Gender.female;
@@ -39,29 +41,40 @@ class _InputPageState extends State<InputPage> {
     else
       return kBottomContainerColor.withOpacity(0.25);
   }
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _advertService.loadRewardedAd();
+    _advertService.addRewardListener();
+    _advertService.showBanner();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('BMI CALCULATOR'),
-        /*actions: <Widget>[
-          FlatButton(
-            color: genderTheme(),
-            onPressed: () {
-              setState(() {
-               selectedLang == Language.en
-                    ? selectedLang = Language.tr
-                    : selectedLang = Language.en;
-
-                languageBrain.setLanguage(selectedLang);
-              });
-            },
-            child: Row(
-              children: <Widget>[Icon(Icons.language), Text('lang')],
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.video_collection_outlined,
+              color: Colors.white,
             ),
-          ),
-        ],*/
+            onPressed: () {
+              final titleText = 'Support us!';
+              final bodyText = "Best way of supporting developers is clicking on ads!";
+              final applyText = "Go to ad!";
+              showRewardedAd(){
+                Navigator.of(context).pop();
+                _advertService.showReardedAd();
+              }
+              var rewardedAdAlert = MyCustomAlert(titleText: titleText, bodyText: bodyText, applyText: applyText, onPressApply: showRewardedAd);
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => rewardedAdAlert);
+            },
+          )
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -160,27 +173,9 @@ class _InputPageState extends State<InputPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          RoundIconButton(
-                            icon: FontAwesomeIcons.minus,
-                            onPressed: () {
-                              setState(() {
-                                if (height > kMinHeight) {
-                                  height--;
-                                }
-                              });
-                            },
-                          ),
+
                           SizedBox(width: 10),
-                          RoundIconButton(
-                            onPressed: () {
-                              setState(() {
-                                if (height < kMaxHeight) {
-                                  height++;
-                                }
-                              });
-                            },
-                            icon: FontAwesomeIcons.plus,
-                          ),
+
                         ],
                       ),
                     ],
@@ -232,27 +227,7 @@ class _InputPageState extends State<InputPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                RoundIconButton(
-                                  icon: FontAwesomeIcons.minus,
-                                  onPressed: () {
-                                    setState(() {
-                                      if (weight > kMinWeight) {
-                                        weight--;
-                                      }
-                                    });
-                                  },
-                                ),
-                                SizedBox(width: 10),
-                                RoundIconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      if (weight < kMaxWeight) {
-                                        weight++;
-                                      }
-                                    });
-                                  },
-                                  icon: FontAwesomeIcons.plus,
-                                ),
+
                               ],
                             ),
                           ],
@@ -301,27 +276,6 @@ class _InputPageState extends State<InputPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                RoundIconButton(
-                                  icon: FontAwesomeIcons.minus,
-                                  onPressed: () {
-                                    setState(() {
-                                      if (age > kMinAge) {
-                                        age--;
-                                      }
-                                    });
-                                  },
-                                ),
-                                SizedBox(width: 10),
-                                RoundIconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      if (age < kMaxAge) {
-                                        age++;
-                                      }
-                                    });
-                                  },
-                                  icon: FontAwesomeIcons.plus,
-                                ),
                               ],
                             ),
                           ],
@@ -357,6 +311,8 @@ class _InputPageState extends State<InputPage> {
             },
             text: 'CALCULATE',
           ),
+          Divider(),
+          Padding(padding: EdgeInsets.only(bottom: 55.0))
         ],
       ),
     );
